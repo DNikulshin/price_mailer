@@ -11,14 +11,9 @@ on:
 jobs:
   send_price_list:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        # Устанавливаем рабочую директорию для всех run-команд
-        working-directory: ./price_mailer/run
     
     steps:
       - name: 1. Checkout repository
-        # Сначала скачиваем весь репозиторий
         uses: actions/checkout@v4
 
       - name: 2. Set up Python
@@ -27,7 +22,8 @@ jobs:
           python-version: '3.10'
 
       - name: 3. Create config.json from Secrets
-        # Теперь команда выполняется в price_mailer/run, путь к файлу стал проще
+        # Устанавливаем рабочую директорию только для этого шага
+        working-directory: ./price_mailer/run
         run: |
           echo '{
               "imap": {
@@ -50,6 +46,6 @@ jobs:
           }' > config.json
 
       - name: 4. Run the mailer script
-        # Путь к скрипту также стал проще
-        run: python price_mailer.py
+        # Запускаем скрипт, указывая полный путь от корня репозитория
+        run: python price_mailer/run/price_mailer.py
 
