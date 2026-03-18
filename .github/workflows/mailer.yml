@@ -1,0 +1,55 @@
+
+name: Price Mailer Cron
+
+on:
+  schedule:
+    # Запускать каждый день в 3:00 UTC (это 6:00 МСК)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    # Позволяет запускать воркфлоу вручную из интерфейса GitHub Actions
+
+jobs:
+  send_price_list:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Устанавливаем рабочую директорию для всех run-команд
+        working-directory: ./price_mailer/run
+    
+    steps:
+      - name: 1. Checkout repository
+        # Сначала скачиваем весь репозиторий
+        uses: actions/checkout@v4
+
+      - name: 2. Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 3. Create config.json from Secrets
+        # Теперь команда выполняется в price_mailer/run, путь к файлу стал проще
+        run: |
+          echo '{
+              "imap": {
+                  "server": "imap.mail.ru",
+                  "port": 993,
+                  "login": "${{ secrets.IMAP_LOGIN }}",
+                  "password": "${{ secrets.IMAP_PASSWORD }}"
+              },
+              "smtp": {
+                  "server": "smtp.mail.ru",
+                  "port": 465,
+                  "login": "${{ secrets.SMTP_LOGIN }}",
+                  "password": "${{ secrets.SMTP_PASSWORD }}",
+                  "from_address": "${{ secrets.IMAP_LOGIN }}"
+              },
+              "search_subject": "Прайс-лист",
+              "recipients": ${{ secrets.RECIPIENTS }},
+              "email_subject": "Актуальный прайс-лист",
+              "email_body": "Добрый день!\n\nВо вложении актуальный прайс-лист.\n\nС уважением."
+          }' > config.json
+
+      - name: 4. Run the mailer script
+        # Путь к скрипту также стал проще
+        run: python price_mailer.py
+
