@@ -11,7 +11,10 @@ on:
 jobs:
   send_price_list:
     runs-on: ubuntu-latest
-    
+    env:
+      # Устанавливаем переменную для использования Node.js 24, чтобы убрать предупреждение
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
     steps:
       - name: 1. Checkout repository
         uses: actions/checkout@v4
@@ -22,7 +25,6 @@ jobs:
           python-version: '3.10'
 
       - name: 3. Create config.json from Secrets
-        # Устанавливаем рабочую директорию только для этого шага
         working-directory: ./price_mailer/run
         run: |
           echo '{
@@ -46,6 +48,5 @@ jobs:
           }' > config.json
 
       - name: 4. Run the mailer script
-        # Запускаем скрипт, указывая полный путь от корня репозитория
         run: python price_mailer/run/price_mailer.py
 
