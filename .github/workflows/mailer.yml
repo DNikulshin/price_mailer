@@ -4,7 +4,7 @@ name: Price Mailer Cron
 on:
   schedule:
     # Запускать каждый день в 3:00 UTC (это 6:00 МСК)
-    - cron: '0 3 * * *'
+     - cron: '17 3 * * *' # 06:17 по МСК
   workflow_dispatch:
     # Позволяет запускать воркфлоу вручную из интерфейса GitHub Actions
 
