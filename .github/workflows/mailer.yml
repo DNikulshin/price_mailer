@@ -39,7 +39,7 @@ jobs:
                   "port": 465,
                   "login": "${{ secrets.SMTP_LOGIN }}",
                   "password": "${{ secrets.SMTP_PASSWORD }}",
-                  "from_address": "${{ secrets.IMAP_LOGIN }}"
+                  "from_address": "${{ secrets.SMTP_LOGIN }}"
               },
               "search_subject": "Прайс-лист",
               "recipients": ${{ secrets.RECIPIENTS }},
