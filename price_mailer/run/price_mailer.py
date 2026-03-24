@@ -3,7 +3,7 @@
 1. Подключается к price@arus-trade.ru по IMAP
 2. Находит последнее письмо с темой «Price»
 3. Скачивает Excel-вложение
-4. Отправляет его с noreply@arus-trade.ru на список получателей
+4. Отправляет его с noreply@arustrade.ru на список получателей
 """
 
 import os
@@ -151,11 +151,12 @@ def send_email(cfg: dict, attachment_path: Path):
     sender_login = smtp_cfg["login"]
     password = smtp_cfg["password"]
     recipients = cfg["recipients"]
-    from_address = smtp_cfg.get("from_address", sender_login)
+    from_address = os.environ.get("FROM_ADDRESS", smtp_cfg.get("from_address", sender_login))
     subject = cfg.get("email_subject", "Актуальный прайс-лист")
     body = cfg.get("email_body", "Добрый день!\n\nВо вложении актуальный прайс-лист.\n\nС уважением.")
 
     log.info(f"Подключаюсь к {smtp_cfg['server']}:{smtp_cfg['port']}...")
+    log.info(f"Отправитель: {from_address}")
     with smtplib.SMTP_SSL(smtp_cfg["server"], smtp_cfg["port"], timeout=30) as server:
         server.login(sender_login, password)
 
@@ -173,14 +174,14 @@ def send_email(cfg: dict, attachment_path: Path):
                 part = MIMEBase("application", "octet-stream")
                 part.set_payload(f.read())
                 encoders.encode_base64(part)
-                
+
                 encoded_filename = quote(attachment_path.name)
                 part.add_header(
                     "Content-Disposition",
                     f"attachment; filename*=UTF-8''{encoded_filename}"
                 )
                 msg.attach(part)
-            
+
             try:
                 server.sendmail(sender_login, recipient, msg.as_string())
                 log.info(f"Письмо успешно отправлено → {recipient}")
