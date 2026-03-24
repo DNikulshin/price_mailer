@@ -9,7 +9,6 @@ jobs:
   send_price_list:
     runs-on: ubuntu-latest
     env:
-      # Устанавливаем переменную для использования Node.js 24, чтобы убрать предупреждение
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
     steps:
       - name: 1. Checkout repository
@@ -29,11 +28,10 @@ jobs:
                   "password": "${{ secrets.IMAP_PASSWORD }}"
               },
               "smtp": {
-                  "server": "smtp.mail.ru",
+                  "server": "smtp.yandex.ru",
                   "port": 465,
                   "login": "${{ secrets.SMTP_LOGIN }}",
-                  "password": "${{ secrets.SMTP_PASSWORD }}",
-                  "from_address": "${{ secrets.SMTP_LOGIN }}"
+                  "password": "${{ secrets.SMTP_PASSWORD }}"
               },
               "search_subject": "Прайс-лист",
               "recipients": ${{ secrets.RECIPIENTS }},
